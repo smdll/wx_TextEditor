@@ -1,5 +1,4 @@
 import wx
-import wx.lib.newevent
 import os
 
 class MainFrame(wx.Frame):
@@ -45,17 +44,16 @@ class MainFrame(wx.Frame):
 		SettMenu = wx.Menu()
 		fontItem = wx.MenuItem(SettMenu, 100, text = "Fonts")
 		SettMenu.AppendItem(fontItem)
-		bgColourItem = wx.MenuItem(SettMenu, 101, text = "Background Colours")
-		SettMenu.AppendItem(bgColourItem)
-		txColourItem = wx.MenuItem(SettMenu, 102, text = "Text Colours")
+		txColourItem = wx.MenuItem(SettMenu, 101, text = "Text Colours")
 		SettMenu.AppendItem(txColourItem)
+		bgColourItem = wx.MenuItem(SettMenu, 102, text = "Background Colours")
+		SettMenu.AppendItem(bgColourItem)
 		menubar.Append(SettMenu, '&Settings')
 
 		self.SetMenuBar(menubar)
 		self.Text = wx.TextCtrl(self, -1, style = wx.EXPAND|wx.TE_MULTILINE|wx.TE_RICH2) #Inorder to set text attributes on windows, an 'wx.TE_RICH2' must be added
 		self.Text.SetDefaultStyle(self.TAttr)
 		self.Bind(wx.EVT_MENU, self.menuHandler)
-		#self.Centre()
 		self.Show(True)
 		self.Bind(wx.EVT_FIND, self.onFind)
 		#self.Bind(wx.EVT_FIND_REPLACE, self.onReplace)
@@ -111,20 +109,21 @@ class MainFrame(wx.Frame):
 			length = len(self.Text.GetValue())
 			self.Text.SetStyle(0, length, self.TAttr)
 
-		elif id == 101: #BG Colours
-			colour = wx.GetColourFromUser(self, caption = "Background Colour")
-			self.TAttr = wx.TextAttr(colBack = colour)
-			length = len(self.Text.GetValue())
-			self.Text.SetStyle(0, length, self.TAttr)
-
-		elif id == 102: #Text Colours
+		elif id == 101: #Text Colours
 			colour = wx.GetColourFromUser(self, caption = "Text Colour")
 			self.TAttr = wx.TextAttr(colText = colour)
 			length = len(self.Text.GetValue())
 			self.Text.SetStyle(0, length, self.TAttr)
 
+		elif id == 102: #BG Colours
+			colour = wx.GetColourFromUser(self, caption = "Background Colour")
+			self.TAttr = wx.TextAttr(colBack = colour)
+			length = len(self.Text.GetValue())
+			self.Text.SetStyle(0, length, self.TAttr)
+
+
 		elif id == 103:
-			self.onHighLightClear(103)
+			self.onHighLightClear()
 
 		elif id == wx.ID_EXIT:
 			self.onExit(wx.EVT_CLOSE)
@@ -152,8 +151,14 @@ class MainFrame(wx.Frame):
 		else:
 			exit()
 
+	def onHighLightClear(self):
+		content = self.Text.GetValue()
+		self.Text.SetStyle(0, len(content), style = self.TAttr)
+		self.Text.Clear()
+		self.Text.AppendText(content)
+
 	def onFind(self, event):
-		self.onHighLightClear(103)
+		self.onHighLightClear()
 		content = self.Text.GetValue()
 		findStr = self.FRData.GetFindString()
 		size = len(findStr)
@@ -164,12 +169,8 @@ class MainFrame(wx.Frame):
 			self.Text.SetInsertionPoint(pos = pos)
 			self.Text.SetStyle(pos, pos + size, wx.TextAttr(colBack = "green"))
 
-	def onHighLightClear(self, event):
-		content = self.Text.GetValue()
-		self.Text.SetStyle(0, len(content), self.TAttr)
-
 	#def onReplace(self, event):
-	#	self.onHighLightClear(103)
+	#	self.onHighLightClear()
 	#	pos = self.Text.GetInsertionPoint()
 	#	content = self.Text.GetValue()
 	#	findStr = self.FRData.GetFindString()
