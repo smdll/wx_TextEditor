@@ -66,13 +66,15 @@ class MainFrame(wx.Frame):
 		if id == wx.ID_NEW:
 			self.Text.Clear()
 			self.SetTitle("Editor - New")
+			self.Text.DiscardEdits()
 
 		elif id == wx.ID_OPEN:
 			dialog = wx.FileDialog(self, "Open...", os.getcwd(), style=wx.FD_OPEN)
 			if dialog.ShowModal() == wx.ID_OK:
 				self.Filename = dialog.GetPath()
 				self.Text.LoadFile(self.Filename)
-			self.SetTitle("Editor - %s"%self.Filename)
+				self.SetTitle("Editor - %s"%self.Filename)
+				self.Text.DiscardEdits()
 			dialog.Destroy()
 
 		elif id == wx.ID_SAVE:
@@ -80,7 +82,8 @@ class MainFrame(wx.Frame):
 			if dialog.ShowModal() == wx.ID_OK:
 				self.Filename = dialog.GetPath()
 				self.Text.SaveFile(self.Filename)
-			self.SetTitle("Editor - %s"%self.Filename)
+				self.SetTitle("Editor - %s"%self.Filename)
+				self.Text.DiscardEdits()
 			dialog.Destroy()
 
 		elif id == wx.ID_COPY:
