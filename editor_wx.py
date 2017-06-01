@@ -5,6 +5,7 @@ class MainFrame(wx.Frame):
 	Filename = ''
 	FRData = wx.FindReplaceData()
 	TAttr = wx.TextAttr()
+	lastPos = 0
 
 	def __init__(self, parent):
 		super(MainFrame, self).__init__(parent, title = "Editor - New", size = (640, 480))
@@ -30,7 +31,7 @@ class MainFrame(wx.Frame):
 		EditMenu.AppendItem(undoItem)
 		redoItem = wx.MenuItem(EditMenu, wx.ID_REDO, text = "Redo")
 		EditMenu.AppendItem(redoItem)
-		FileMenu.AppendSeparator()
+		EditMenu.AppendSeparator()
 		cutItem = wx.MenuItem(EditMenu, wx.ID_CUT, text = "Cut")
 		EditMenu.AppendItem(cutItem)
 		copyItem = wx.MenuItem(EditMenu, wx.ID_COPY, text = "Copy")
@@ -54,14 +55,20 @@ class MainFrame(wx.Frame):
 		bgColourItem = wx.MenuItem(SettMenu, 102, text = "Background Colours")
 		SettMenu.AppendItem(bgColourItem)
 		menubar.Append(SettMenu, '&Settings')
+#Help Menu
+		HelpMenu = wx.Menu()
+		aboutItem = wx.MenuItem(HelpMenu, wx.ID_ABOUT, text = "About...")
+		HelpMenu.AppendItem(aboutItem)
+		menubar.Append(HelpMenu, '&Help')
 
 		self.SetMenuBar(menubar)
 		self.Text = wx.TextCtrl(self, -1, style = wx.EXPAND|wx.TE_MULTILINE|wx.TE_RICH2) #Inorder to set text attributes on windows, an 'wx.TE_RICH2' must be added
 		self.Text.SetDefaultStyle(self.TAttr)
+		self.Text.DiscardEdits()
 		self.Bind(wx.EVT_MENU, self.menuHandler)
 		self.Show(True)
 		self.Bind(wx.EVT_FIND, self.onFind)
-		#self.Bind(wx.EVT_FIND_REPLACE, self.onReplace)
+		self.Bind(wx.EVT_FIND_REPLACE, self.onReplace)
 		self.Bind(wx.EVT_FIND_REPLACE_ALL, self.onReplaceAll)
 		self.Bind(wx.EVT_TEXT, self.onModified)
 		self.Bind(wx.EVT_CLOSE, self.onExit)
@@ -74,7 +81,6 @@ class MainFrame(wx.Frame):
 			self.Text.DiscardEdits()
 
 		elif id == wx.ID_OPEN:
-<<<<<<< HEAD
 			dialog = wx.FileDialog(self, "Open...", os.getcwd(), style=wx.FD_OPEN)
 			if dialog.ShowModal() == wx.ID_OK:
 				self.Filename = dialog.GetPath()
@@ -84,20 +90,18 @@ class MainFrame(wx.Frame):
 			dialog.Destroy()
 
 		elif id == wx.ID_SAVE:
-			dialog = wx.FileDialog(self, "Save", os.getcwd(), style=wx.FD_SAVE)
-			if dialog.ShowModal() == wx.ID_OK:
-				self.Filename = dialog.GetPath()
+			if self.Filename == '' or self.Text.IsModified():
+				dialog = wx.FileDialog(self, "Save", os.getcwd(), style=wx.FD_SAVE)
+				if dialog.ShowModal() == wx.ID_OK:
+					self.Filename = dialog.GetPath()
+					self.Text.SaveFile(self.Filename)
+					self.SetTitle("Editor - %s"%self.Filename)
+					self.Text.DiscardEdits()
+				dialog.Destroy()
+			else:
 				self.Text.SaveFile(self.Filename)
 				self.SetTitle("Editor - %s"%self.Filename)
 				self.Text.DiscardEdits()
-			dialog.Destroy()
-=======
-			self.onOpen()
-			self.SetTitle("Editor - %s"%self.Filename)
-
-		elif id == wx.ID_SAVE:
-			self.onSave()
-			self.SetTitle("Editor - %s"%self.Filename)
 
 		elif id == wx.ID_UNDO:
 			if self.Text.CanUndo():
@@ -106,7 +110,6 @@ class MainFrame(wx.Frame):
 		elif id == wx.ID_REDO:
 			if self.Text.CanRedo():
 				self.Text.Redo()
->>>>>>> 9ba956cc1db7713eab1d8cc935c4b8d11c89bbae
 
 		elif id == wx.ID_COPY:
 			if self.Text.CanCopy():
@@ -149,22 +152,11 @@ class MainFrame(wx.Frame):
 		elif id == 103:
 			self.onHighLightClear()
 
+		elif id == wx.ID_ABOUT:
+			wx.MessageBox("Designed by SMD, a NotePad emulator.", "About", wx.OK, self)
+
 		elif id == wx.ID_EXIT:
 			self.onExit(wx.EVT_CLOSE)
-
-	def onOpen(self):
-		dialog = wx.FileDialog(self, "Open...", os.getcwd(), style=wx.FD_OPEN)
-		if dialog.ShowModal() == wx.ID_OK:
-			self.Filename = dialog.GetPath()
-			self.Text.LoadFile(self.Filename)
-		dialog.Destroy()
-
-	def onSave(self):
-		dialog = wx.FileDialog(self, "Save...", os.getcwd(), style=wx.FD_SAVE)
-		if dialog.ShowModal() == wx.ID_OK:
-			self.Filename = dialog.GetPath()
-			self.Text.SaveFile(self.Filename)
-		dialog.Destroy()
 
 	def onExit(self, event):
 		if self.Text.IsModified():
@@ -200,22 +192,22 @@ class MainFrame(wx.Frame):
 			self.Text.SetInsertionPoint(pos = pos)
 			self.Text.SetStyle(pos, pos + size, wx.TextAttr(colBack = "green"))
 
-#	def onReplace(self, event):
-#		self.onHighLightClear()
-#		pos = self.Text.GetInsertionPoint()
-#		content = self.Text.GetValue()
-#		findStr = self.FRData.GetFindString()
-#		repStr = self.FRData.GetReplaceString()
-#		size = len(findStr)
-#		for pos in range(pos, len(content) - size):
-#			pos = content.find(findStr, pos)
-#			if pos == -1:
-#				return
-#			left = content[0:pos]
-#			right = content[pos + size:]
-#			content = "%s%s%s"%(left, repStr, right)
-#			self.Text.Clear()
-#			self.Text.AppendText(content)
+	def onReplace(self, event):
+		self.onHighLightClear()
+		content = self.Text.GetValue()
+		findStr = self.FRData.GetFindString()
+		repStr = self.FRData.GetReplaceString()
+		size = len(findStr)
+		self.lastPos = content.find(findStr, self.lastPos)
+		print self.lastPos
+		if self.lastPos == -1:
+			self.lastPos = 0
+			return
+		left = content[0:self.lastPos]
+		right = content[self.lastPos + size:]
+		content = "%s%s%s"%(left, repStr, right)
+		self.Text.Clear()
+		self.Text.AppendText(content)
 
 	def onReplaceAll(self, event):
 		self.onHighLightClear()
