@@ -68,6 +68,7 @@ class MainFrame(wx.Frame):
 		self.Bind(wx.EVT_MENU, self.menuHandler)
 		self.Show(True)
 		self.Bind(wx.EVT_FIND, self.onFind)
+		self.Bind(wx.EVT_FIND_NEXT, self.onFind)
 		self.Bind(wx.EVT_FIND_REPLACE, self.onReplace)
 		self.Bind(wx.EVT_FIND_REPLACE_ALL, self.onReplaceAll)
 		self.Bind(wx.EVT_TEXT, self.onModified)
@@ -188,20 +189,24 @@ class MainFrame(wx.Frame):
 		for pos in range(0, len(content) - size):
 			pos = content.find(findStr, pos)
 			if pos == -1:
-				return
-			self.Text.SetInsertionPoint(pos = pos)
+				pos = 0
+				break
 			self.Text.SetStyle(pos, pos + size, wx.TextAttr(colBack = "green"))
+		self.lastPos = content.find(findStr, self.lastPos + size)
+		if self.lastPos == -1:
+			self.lastPos = 0
+			return
+		self.Text.SetInsertionPoint(pos = self.lastPos)
 
 	def onReplace(self, event):
-		self.onHighLightClear()
 		content = self.Text.GetValue()
 		findStr = self.FRData.GetFindString()
 		repStr = self.FRData.GetReplaceString()
 		size = len(findStr)
 		self.lastPos = content.find(findStr, self.lastPos)
-		print self.lastPos
 		if self.lastPos == -1:
 			self.lastPos = 0
+			wx.MessageBox("String Not Found", "Alert", wx.OK, self)
 			return
 		left = content[0:self.lastPos]
 		right = content[self.lastPos + size:]
@@ -210,7 +215,6 @@ class MainFrame(wx.Frame):
 		self.Text.AppendText(content)
 
 	def onReplaceAll(self, event):
-		self.onHighLightClear()
 		content = self.Text.GetValue()
 		findStr = self.FRData.GetFindString()
 		repStr = self.FRData.GetReplaceString()
