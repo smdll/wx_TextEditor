@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import os
 
@@ -8,59 +9,59 @@ class MainFrame(wx.Frame):
 	lastPos = 0
 
 	def __init__(self, parent):
-		super(MainFrame, self).__init__(parent, title = "Editor - New", size = (640, 480))
+		super(MainFrame, self).__init__(parent, title = u"记事本 - 新文件", size = (640, 480))
 		self.InitUI()
 
 	def InitUI(self):
 		menubar = wx.MenuBar()
-#File Menu
+#文件菜单
 		FileMenu = wx.Menu()
-		newItem = wx.MenuItem(FileMenu, wx.ID_NEW, text = "New")
+		newItem = wx.MenuItem(FileMenu, wx.ID_NEW, text = u"新建")
 		FileMenu.AppendItem(newItem)
-		openItem = wx.MenuItem(FileMenu, wx.ID_OPEN, text = "Open...")
+		openItem = wx.MenuItem(FileMenu, wx.ID_OPEN, text = u"打开...")
 		FileMenu.AppendItem(openItem)
-		saveItem = wx.MenuItem(FileMenu, wx.ID_SAVE, text = "Save")
+		saveItem = wx.MenuItem(FileMenu, wx.ID_SAVE, text = u"保存")
 		FileMenu.AppendItem(saveItem)		
 		FileMenu.AppendSeparator()
-		quit = wx.MenuItem(FileMenu, wx.ID_EXIT, text = "Quit")
+		quit = wx.MenuItem(FileMenu, wx.ID_EXIT, text = u"退出")
 		FileMenu.AppendItem(quit)
-		menubar.Append(FileMenu, '&File')
-#Edit Menu
+		menubar.Append(FileMenu, u'&文件')
+#编辑菜单
 		EditMenu = wx.Menu()
-		undoItem = wx.MenuItem(EditMenu, wx.ID_UNDO, text = "Undo")
+		undoItem = wx.MenuItem(EditMenu, wx.ID_UNDO, text = u"撤销")
 		EditMenu.AppendItem(undoItem)
-		redoItem = wx.MenuItem(EditMenu, wx.ID_REDO, text = "Redo")
+		redoItem = wx.MenuItem(EditMenu, wx.ID_REDO, text = u"重做")
 		EditMenu.AppendItem(redoItem)
 		EditMenu.AppendSeparator()
-		cutItem = wx.MenuItem(EditMenu, wx.ID_CUT, text = "Cut")
+		cutItem = wx.MenuItem(EditMenu, wx.ID_CUT, text = u"剪切")
 		EditMenu.AppendItem(cutItem)
-		copyItem = wx.MenuItem(EditMenu, wx.ID_COPY, text = "Copy")
+		copyItem = wx.MenuItem(EditMenu, wx.ID_COPY, text = u"复制")
 		EditMenu.AppendItem(copyItem)
-		pasteItem = wx.MenuItem(EditMenu, wx.ID_PASTE, text = "Paste")
+		pasteItem = wx.MenuItem(EditMenu, wx.ID_PASTE, text = u"粘贴")
 		EditMenu.AppendItem(pasteItem)
 		EditMenu.AppendSeparator()
-		replaceItem = wx.MenuItem(EditMenu, wx.ID_REPLACE, text = "Find && Replace...")
+		replaceItem = wx.MenuItem(EditMenu, wx.ID_REPLACE, text = u"查找&&替换...")
 		EditMenu.AppendItem(replaceItem)
-		clearItem = wx.MenuItem(EditMenu, 103, text = "Clear Highlight")
+		clearItem = wx.MenuItem(EditMenu, 103, text = u"清除高亮")
 		EditMenu.AppendItem(clearItem)
-		menubar.Append(EditMenu, '&Edit')
-#Settings Menu
+		menubar.Append(EditMenu, u'&编辑')
+#设置菜单
 		SettMenu = wx.Menu()
-		fontItem = wx.MenuItem(SettMenu, 100, text = "Fonts")
+		fontItem = wx.MenuItem(SettMenu, 100, text = u"字体")
 		SettMenu.AppendItem(fontItem)
-		txColourItem = wx.MenuItem(SettMenu, 101, text = "Text Colours")
+		txColourItem = wx.MenuItem(SettMenu, 101, text = u"文字颜色")
 		SettMenu.AppendItem(txColourItem)
-		bgColourItem = wx.MenuItem(SettMenu, 102, text = "Background Colours")
+		bgColourItem = wx.MenuItem(SettMenu, 102, text = u"背景颜色")
 		SettMenu.AppendItem(bgColourItem)
-		menubar.Append(SettMenu, '&Settings')
-#Help Menu
+		menubar.Append(SettMenu, u'&设置')
+#帮助菜单
 		HelpMenu = wx.Menu()
-		aboutItem = wx.MenuItem(HelpMenu, wx.ID_ABOUT, text = "About...")
+		aboutItem = wx.MenuItem(HelpMenu, wx.ID_ABOUT, text = u"关于...")
 		HelpMenu.AppendItem(aboutItem)
-		menubar.Append(HelpMenu, '&Help')
+		menubar.Append(HelpMenu, u'&帮助')
 
 		self.SetMenuBar(menubar)
-		self.Text = wx.TextCtrl(self, -1, style = wx.EXPAND|wx.TE_MULTILINE|wx.TE_RICH2) #Inorder to set text attributes on windows, an 'wx.TE_RICH2' must be added
+		self.Text = wx.TextCtrl(self, -1, style = wx.EXPAND|wx.TE_MULTILINE|wx.TE_RICH2) #在Windows上必须加上'wx.TE_RICH2'才能正常显示字体颜色等文字属性
 		self.Text.SetDefaultStyle(self.TAttr)
 		self.Text.DiscardEdits()
 		self.Bind(wx.EVT_MENU, self.menuHandler)
@@ -76,30 +77,30 @@ class MainFrame(wx.Frame):
 		id = event.GetId()
 		if id == wx.ID_NEW:
 			self.Text.Clear()
-			self.SetTitle("Editor - New")
+			self.SetTitle(u"记事本 - 新文件")
 			self.Text.DiscardEdits()
 
 		elif id == wx.ID_OPEN:
-			dialog = wx.FileDialog(self, "Open...", os.getcwd(), style=wx.FD_OPEN)
+			dialog = wx.FileDialog(self, u"打开...", os.getcwd(), style=wx.FD_OPEN)
 			if dialog.ShowModal() == wx.ID_OK:
 				self.Filename = dialog.GetPath()
 				self.Text.LoadFile(self.Filename)
-				self.SetTitle("Editor - %s"%self.Filename)
+				self.SetTitle(u"记事本 - %s"%self.Filename)
 				self.Text.DiscardEdits()
 			dialog.Destroy()
 
 		elif id == wx.ID_SAVE:
 			if self.Filename == '' or self.Text.IsModified():
-				dialog = wx.FileDialog(self, "Save", os.getcwd(), style=wx.FD_SAVE)
+				dialog = wx.FileDialog(self, u"保存", os.getcwd(), style=wx.FD_SAVE)
 				if dialog.ShowModal() == wx.ID_OK:
 					self.Filename = dialog.GetPath()
 					self.Text.SaveFile(self.Filename)
-					self.SetTitle("Editor - %s"%self.Filename)
+					self.SetTitle(u"记事本 - %s"%self.Filename)
 					self.Text.DiscardEdits()
 				dialog.Destroy()
 			else:
 				self.Text.SaveFile(self.Filename)
-				self.SetTitle("Editor - %s"%self.Filename)
+				self.SetTitle(u"记事本 - %s"%self.Filename)
 				self.Text.DiscardEdits()
 
 		elif id == wx.ID_UNDO:
@@ -123,23 +124,23 @@ class MainFrame(wx.Frame):
 				self.Text.Paste()
 
 		elif id == wx.ID_REPLACE:
-			rep = wx.FindReplaceDialog(self, data = self.FRData, title = "Find & Replace", style = wx.FR_REPLACEDIALOG|wx.FR_NOMATCHCASE|wx.FR_NOWHOLEWORD)
+			rep = wx.FindReplaceDialog(self, data = self.FRData, title = u"查找&替换", style = wx.FR_REPLACEDIALOG|wx.FR_NOMATCHCASE|wx.FR_NOWHOLEWORD)
 			rep.Show()
 
-		elif id == 100: #Fonts
-			font = wx.GetFontFromUser(self, caption = "Select Font")
+		elif id == 100: #字体
+			font = wx.GetFontFromUser(self, caption = u"选择字体")
 			self.TAttr = wx.TextAttr(font = font)
 			length = len(self.Text.GetValue())
 			self.Text.SetStyle(0, length, self.TAttr)
 
-		elif id == 101: #Text Colours
-			colour = wx.GetColourFromUser(self, caption = "Text Colour")
+		elif id == 101: #文字颜色
+			colour = wx.GetColourFromUser(self, caption = u"选择文字颜色")
 			self.TAttr = wx.TextAttr(colText = colour)
 			length = len(self.Text.GetValue())
 			self.Text.SetStyle(0, length, self.TAttr)
 
-		elif id == 102: #BG Colours
-			colour = wx.GetColourFromUser(self, caption = "Background Colour")
+		elif id == 102: #背景颜色
+			colour = wx.GetColourFromUser(self, caption = u"选择背景颜色")
 			self.TAttr = wx.TextAttr(colBack = colour)
 			length = len(self.Text.GetValue())
 			self.Text.SetStyle(0, length, self.TAttr)
@@ -148,14 +149,14 @@ class MainFrame(wx.Frame):
 			self.onHighLightClear()
 
 		elif id == wx.ID_ABOUT:
-			wx.MessageBox("Designed by SMD, a NotePad emulator.", "About", wx.OK, self)
+			wx.MessageBox(u"由SMD设计，一个记事本模拟器", u"关于", wx.OK, self)
 
 		elif id == wx.ID_EXIT:
 			self.onExit(wx.EVT_CLOSE)
 
 	def onExit(self, event):
 		if self.Text.IsModified():
-			dialog = wx.MessageDialog(self, "File is modified! Save?", caption = "Alert", style = wx.YES_NO|wx.STAY_ON_TOP|wx.CENTRE|wx.CANCEL)
+			dialog = wx.MessageDialog(self, u"文件已修改！保存？", caption = u"提示", style = wx.YES_NO|wx.STAY_ON_TOP|wx.CENTRE|wx.CANCEL)
 			status = dialog.ShowModal()
 			if status == wx.ID_YES:
 				self.onSave()
@@ -189,7 +190,7 @@ class MainFrame(wx.Frame):
 		self.lastPos = content.find(findStr, self.lastPos + size)
 		if self.lastPos == -1:
 			self.lastPos = 0
-			wx.MessageBox("String:'%s' Not Found"%findStr, "Alert", wx.OK, self)
+			wx.MessageBox(u"找不到'%s'"%findStr, u"提示", wx.OK, self)
 			return
 		self.Text.SetInsertionPoint(pos = self.lastPos)
 
@@ -201,7 +202,7 @@ class MainFrame(wx.Frame):
 		self.lastPos = content.find(findStr, self.lastPos)
 		if self.lastPos == -1:
 			self.lastPos = 0
-			wx.MessageBox("String:'%s' Not Found"%findStr, "Alert", wx.OK, self)
+			wx.MessageBox(u"找不到'%s'"%findStr, u"提示", wx.OK, self)
 			return
 		left = content[0:self.lastPos]
 		right = content[self.lastPos + size:]
@@ -217,7 +218,7 @@ class MainFrame(wx.Frame):
 		for pos in range(0, len(content) - size):
 			pos = content.find(findStr, pos)
 			if pos == -1:
-				wx.MessageBox("String:'%s' Not Found"%findStr, "Alert", wx.OK, self)
+				wx.MessageBox(u"找不到'%s'"%findStr, u"提示", wx.OK, self)
 				return
 			self.Text.SetInsertionPoint(pos = pos)
 			left = content[0:pos]
