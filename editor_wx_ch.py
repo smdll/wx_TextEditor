@@ -130,20 +130,32 @@ class MainFrame(wx.Frame):
 		elif id == 100: #字体
 			font = wx.GetFontFromUser(self, caption = u"选择字体")
 			self.TAttr = wx.TextAttr(font = font)
-			length = len(self.Text.GetValue())
-			self.Text.SetStyle(0, length, self.TAttr)
+			loc = self.Text.GetSelection()
+			if loc[0] == loc[1]:
+				length = len(self.Text.GetValue())
+				self.Text.SetStyle(0, length, self.TAttr)
+			else:
+				self.Text.SetStyle(loc[0], loc[1], self.TAttr)
 
 		elif id == 101: #文字颜色
 			colour = wx.GetColourFromUser(self, caption = u"选择文字颜色")
 			self.TAttr = wx.TextAttr(colText = colour)
-			length = len(self.Text.GetValue())
-			self.Text.SetStyle(0, length, self.TAttr)
+			loc = self.Text.GetSelection()
+			if loc[0] == loc[1]:
+				length = len(self.Text.GetValue())
+				self.Text.SetStyle(0, length, self.TAttr)
+			else:
+				self.Text.SetStyle(loc[0], loc[1], self.TAttr)
 
 		elif id == 102: #背景颜色
 			colour = wx.GetColourFromUser(self, caption = u"选择背景颜色")
 			self.TAttr = wx.TextAttr(colBack = colour)
-			length = len(self.Text.GetValue())
-			self.Text.SetStyle(0, length, self.TAttr)
+			loc = self.Text.GetSelection()
+			if loc[0] == loc[1]:
+				length = len(self.Text.GetValue())
+				self.Text.SetStyle(0, length, self.TAttr)
+			else:
+				self.Text.SetStyle(loc[0], loc[1], self.TAttr)
 
 		elif id == 103:
 			self.onHighLightClear()

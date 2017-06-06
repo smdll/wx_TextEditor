@@ -129,20 +129,32 @@ class MainFrame(wx.Frame):
 		elif id == 100: #Fonts
 			font = wx.GetFontFromUser(self, caption = "Select Font")
 			self.TAttr = wx.TextAttr(font = font)
-			length = len(self.Text.GetValue())
-			self.Text.SetStyle(0, length, self.TAttr)
+			loc = self.Text.GetSelection()
+			if loc[0] == loc[1]:
+				length = len(self.Text.GetValue())
+				self.Text.SetStyle(0, length, self.TAttr)
+			else:
+				self.Text.SetStyle(loc[0], loc[1], self.TAttr)
 
 		elif id == 101: #Text Colours
 			colour = wx.GetColourFromUser(self, caption = "Text Colour")
 			self.TAttr = wx.TextAttr(colText = colour)
-			length = len(self.Text.GetValue())
-			self.Text.SetStyle(0, length, self.TAttr)
+			loc = self.Text.GetSelection()
+			if loc[0] == loc[1]:
+				length = len(self.Text.GetValue())
+				self.Text.SetStyle(0, length, self.TAttr)
+			else:
+				self.Text.SetStyle(loc[0], loc[1], self.TAttr)
 
 		elif id == 102: #BG Colours
 			colour = wx.GetColourFromUser(self, caption = "Background Colour")
 			self.TAttr = wx.TextAttr(colBack = colour)
-			length = len(self.Text.GetValue())
-			self.Text.SetStyle(0, length, self.TAttr)
+			loc = self.Text.GetSelection()
+			if loc[0] == loc[1]:
+				length = len(self.Text.GetValue())
+				self.Text.SetStyle(0, length, self.TAttr)
+			else:
+				self.Text.SetStyle(loc[0], loc[1], self.TAttr)
 
 		elif id == 103:
 			self.onHighLightClear()
