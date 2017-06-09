@@ -28,11 +28,6 @@ class MainFrame(wx.Frame):
 		menubar.Append(FileMenu, u'&文件')
 #编辑菜单
 		EditMenu = wx.Menu()
-		undoItem = wx.MenuItem(EditMenu, wx.ID_UNDO, text = u"撤销")
-		EditMenu.AppendItem(undoItem)
-		redoItem = wx.MenuItem(EditMenu, wx.ID_REDO, text = u"重做")
-		EditMenu.AppendItem(redoItem)
-		EditMenu.AppendSeparator()
 		cutItem = wx.MenuItem(EditMenu, wx.ID_CUT, text = u"剪切")
 		EditMenu.AppendItem(cutItem)
 		copyItem = wx.MenuItem(EditMenu, wx.ID_COPY, text = u"复制")
@@ -61,9 +56,8 @@ class MainFrame(wx.Frame):
 		menubar.Append(HelpMenu, u'&帮助')
 
 		self.SetMenuBar(menubar)
-		self.Text = wx.TextCtrl(self, -1, style = wx.EXPAND|wx.TE_MULTILINE|wx.TE_RICH2) #在Windows上必须加上'wx.TE_RICH2'才能正常显示字体颜色等文字属性
+		self.Text = wx.TextCtrl(self, -1, style = wx.EXPAND|wx.TE_MULTILINE|wx.TE_RICH2)
 		self.Text.SetDefaultStyle(self.TAttr)
-		self.Text.DiscardEdits()
 		self.Bind(wx.EVT_MENU, self.menuHandler)
 		self.Show(True)
 		self.Bind(wx.EVT_FIND, self.onFind)
@@ -102,14 +96,6 @@ class MainFrame(wx.Frame):
 				self.Text.SaveFile(self.Filename)
 				self.SetTitle(u"记事本 - %s"%self.Filename)
 				self.Text.DiscardEdits()
-
-		elif id == wx.ID_UNDO:
-			if self.Text.CanUndo():
-				self.Text.Undo()
-
-		elif id == wx.ID_REDO:
-			if self.Text.CanRedo():
-				self.Text.Redo()
 
 		elif id == wx.ID_COPY:
 			if self.Text.CanCopy():
@@ -171,7 +157,14 @@ class MainFrame(wx.Frame):
 			dialog = wx.MessageDialog(self, u"文件已修改！保存？", caption = u"提示", style = wx.YES_NO|wx.STAY_ON_TOP|wx.CENTRE|wx.CANCEL)
 			status = dialog.ShowModal()
 			if status == wx.ID_YES:
-				self.onSave()
+				save = wx.FileDialog(self, u"保存", os.getcwd(), style=wx.FD_SAVE)
+				if save.ShowModal() == wx.ID_OK:
+					self.Filename = save.GetPath()
+					self.Text.SaveFile(self.Filename)
+				else:
+					save.Destory()
+					return
+				save.Destroy()
 				exit()
 			elif status == wx.ID_NO:
 				dialog.Destroy()
@@ -184,9 +177,9 @@ class MainFrame(wx.Frame):
 
 	def onHighLightClear(self):
 		content = self.Text.GetValue()
-		self.Text.SetStyle(0, len(content), style = self.TAttr)
 		self.Text.Clear()
 		self.Text.AppendText(content)
+		self.Text.SetStyle(0, len(content), style = self.TAttr)
 
 	def onFind(self, event):
 		self.onHighLightClear()
